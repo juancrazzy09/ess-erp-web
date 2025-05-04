@@ -1,0 +1,11 @@
+body.home-background{
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100vw;
+  overflow-x: hidden;
+  background-image: url(/src/assets/img/green.png);
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+  background-attachment: scroll;
+  }
