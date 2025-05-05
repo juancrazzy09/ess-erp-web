@@ -13,7 +13,7 @@ function SideCarousel() {
   };
 
   return (
-    <Box sx={{ width: '100%', pt: '10px' }}> {/* <-- just 10px padding top here */}
+    <Box sx={{ width: '100%', }}> {/* <-- just 10px padding top here */}
     {/* Mobile Drawer Toggle Button */}
     <IconButton 
       sx={{ display: { sm: 'none' }, position: 'absolute', top: 20, left: 20 }}
@@ -24,12 +24,17 @@ function SideCarousel() {
 
     <Box
       sx={{
+        py: 1,
         flexGrow: 1,
         maxWidth: '130vw',
         maxHeight: '110vh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        backgroundImage: 'url(/src/assets/img/2178148-scaled.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
       }}
     >
       <Carousel

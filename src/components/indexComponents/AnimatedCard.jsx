@@ -3,7 +3,15 @@ import { Box, Card, CardContent, Typography } from '@mui/material';
 import { useInView } from 'react-intersection-observer';
 import { motion } from 'framer-motion';
 
-const AnimatedCard = ({ direction, title, content, scrollDir, image }) => {
+const AnimatedCard = ({ 
+  direction, 
+  title, 
+  content, 
+  scrollDir, 
+  image, 
+  enableSeemore = true,
+  bgImage
+}) => {
   const { ref, inView } = useInView({ threshold: 0.3 });
 
   const variants = {
@@ -52,7 +60,16 @@ const AnimatedCard = ({ direction, title, content, scrollDir, image }) => {
       cursor: 'pointer',
     }}
   >
-    <Card sx={{ height: '100%' }}>
+    <Card
+      sx={{ 
+        height: '100%',
+        backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        color: bgImage ? 'white' : 'inherit',
+      }}
+    >
       {image && (
         <Box
           sx={{
@@ -74,39 +91,48 @@ const AnimatedCard = ({ direction, title, content, scrollDir, image }) => {
           />
         </Box>
       )}
-      <CardContent>
-      <Typography variant="h5" fontWeight="bold" gutterBottom>
-        {title}
-      </Typography>
 
-      <Typography
-        variant="body2"
+      <CardContent
         sx={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          display: '-webkit-box',
-          WebkitLineClamp: showFull ? 'unset' : 1,
-          WebkitBoxOrient: 'vertical',
-          transition: 'all 0.3s ease',
+       /*    backgroundColor: bgImage ? 'rgba(0, 0, 0, 0.4)' : 'transparent', */
+          bgImage  : 'transparent',
+          borderRadius: 1,
         }}
       >
-        {content}
-      </Typography>
+        <Typography variant="h5" fontWeight="bold" gutterBottom sx={{textAlign:'center', color:'green'}}>
+          {title}
+        </Typography>
 
-      <Typography
-        variant="body2"
-        sx={{
-          color: 'primary.main',
-          cursor: 'pointer',
-          mt: 1,
-          fontWeight: 500,
-          userSelect: 'none',
-        }}
-        onClick={() => setShowFull(prev => !prev)}
-      >
-        {showFull ? 'See Less' : 'See More'}
-      </Typography>
-    </CardContent>
+        <Typography
+          variant="body2"
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: showFull ? 'unset' : 1,
+            WebkitBoxOrient: 'vertical',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          {content}
+        </Typography>
+
+        {enableSeemore && (
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'primary.main',
+              cursor: 'pointer',
+              mt: 1,
+              fontWeight: 500,
+              userSelect: 'none',
+            }}
+            onClick={() => setShowFull((prev) => !prev)}
+          >
+            {showFull ? 'See Less' : 'See More'}
+          </Typography>
+        )}
+      </CardContent>
     </Card>
   </motion.div>
   );

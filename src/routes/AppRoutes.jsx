@@ -5,6 +5,7 @@ import Index from '../pages/Index/Index';
 import Login from "../pages/Auth/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 
+
 const AppRoutes = () => (
 <Router>
   <Routes>

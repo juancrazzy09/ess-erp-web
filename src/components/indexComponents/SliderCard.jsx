@@ -164,6 +164,7 @@ const SliderCard = () => {
                 content={card.content}
                 scrollDir={scrollDir}
                 image={card.image}
+                enableSeemore = {true}
               />
             </div>
           </Grid>
@@ -171,13 +172,13 @@ const SliderCard = () => {
       </Grid>
 
       <Modal
-          open={modalOpen}
-          onClose={handleClose}
-          BackdropProps={{
-            style: { backgroundColor: 'transparent' }, // 👈 Transparent background
-            timeout: 300,
-          }}
-        >
+        open={modalOpen}
+        onClose={handleClose}
+        BackdropProps={{
+          style: { backgroundColor: 'transparent' },
+          timeout: 300,
+        }}
+      >
         <Box
           sx={{
             width: '100vw',
@@ -185,19 +186,23 @@ const SliderCard = () => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            p: 2,
           }}
         >
           <Slide in={slideIn} direction="down" mountOnEnter unmountOnExit>
-          <Box
+            <Box
               sx={{
                 width: { xs: '90%', md: 800 },
                 borderRadius: 2,
                 boxShadow: 24,
-                color: '#fff',
-                overflow: 'hidden', // ensures header border-radius stays intact
+                display: 'flex',
+                flexDirection: 'column',
+                maxHeight: 550,
+                bgcolor: 'background.paper',
+                overflow: 'hidden',
               }}
             >
-              {/* Header with background image */}
+              {/* Header */}
               <Box
                 sx={{
                   backgroundImage: 'url(/src/assets/img/2178148-scaled.jpg)',
@@ -208,7 +213,7 @@ const SliderCard = () => {
                   textAlign: 'center',
                 }}
               >
-             <Typography
+                <Typography
                   variant="h4"
                   sx={{
                     color: '#fff',
@@ -226,9 +231,16 @@ const SliderCard = () => {
                 </Typography>
               </Box>
 
-              {/* Content */}
-              <Box sx={{ p: 4, bgcolor: 'background.paper', color: 'text.primary', maxHeight: '100vh', overflowY: 'auto' }}>
-                  {activeCard?.modalContent}
+              {/* Scrollable content */}
+              <Box
+                sx={{
+                  p: 4,
+                  overflowY: 'auto',
+                  flex: 1,
+                  color: 'text.primary',
+                }}
+              >
+                {activeCard?.modalContent}
                 <Box textAlign="right" mt={3}>
                   <Button onClick={handleClose} variant="contained">
                     Close
@@ -236,10 +248,10 @@ const SliderCard = () => {
                 </Box>
               </Box>
             </Box>
-
           </Slide>
         </Box>
       </Modal>
+
     </Box>
   );
 };

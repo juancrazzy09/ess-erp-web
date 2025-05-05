@@ -26,6 +26,7 @@ import SliderCard from '../../components/indexComponents/SliderCard';
 import UpcommingEvents from '../../components/indexComponents/UpcommingEventsComponents';
 import AboutUsComponent from '../../components/indexComponents/AboutUsComponent';
 import SpecialProgram from '../../components/indexComponents/SpecialProgram';
+import StudentReqAndEnroll from '../../components/indexComponents/StudentReqAndEnroll';
 import Footer from '../../components/SharedLayoutComponents/Footer';
 import '../../assets/css/index/index.css';
 
@@ -43,7 +44,10 @@ const navItems = [
   },
   {
     label: 'Seton Admissions',
-    dropdown: ['Student Requirements', 'Student Online Application'],
+    dropdown: [
+      {label: 'Student Requirements', targetId: 'student-enrollment'}, 
+      {label: 'Student Online Application', targetId: 'student-enrollment'}
+    ],
   },
   {
     label: 'About ESS',
@@ -59,7 +63,7 @@ const navItems = [
     label: 'Programs',
     dropdown: [
       { label: 'Academic Programs', targetId: 'school-program-section' },
-      { label: 'Special Programs' },
+      { label: 'Special Programs', targetId: 'special-program' },
       { label: 'Student Services' },
     ],
   },
@@ -342,14 +346,14 @@ function DrawerAppBar(props) {
           <TopMenu />
         </Box>
 
-        <Box id="newsevents-section" sx={{ width: '100%', backgroundColor: 'green', py: 2, textAlign: 'center' }}>
+        <Box id="newsevents-section" sx={{ width: '100%', backgroundColor: 'green', py: 2, textAlign: 'center',boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)', }}>
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
             News & Announcement
           </Typography>
         </Box>
         <SideCarousel />
 
-        <Box id="campevents-section" sx={{ width: '100%', backgroundImage: 'linear-gradient(to right, green, yellow)', py: 2, textAlign: 'center', mt: 1 }}>
+        <Box id="campevents-section" sx={{ width: '100%', backgroundImage: 'linear-gradient(to right, green, yellow)', py: 2, textAlign: 'center', }}>
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
             Events in Campus
           </Typography>
@@ -359,7 +363,7 @@ function DrawerAppBar(props) {
           <EventCarousel />
         </Box>
 
-        <Toolbar />
+      {/*   <Toolbar /> */}
 
         <Box id="school-program-section" sx={{ width: '100%', backgroundImage: 'linear-gradient(to left, green, yellow)', py: 2, textAlign: 'center' }}>
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
@@ -367,12 +371,18 @@ function DrawerAppBar(props) {
           </Typography>
         </Box>
         <SliderCard />
-        <Box id="school-program-section" sx={{ width: '100%', backgroundImage: 'linear-gradient(to left, green, yellow)', py: 2, textAlign: 'center' }}>
+        <Box id="special-program" sx={{ width: '100%', backgroundImage: 'linear-gradient(to left, green, yellow)', py: 2, textAlign: 'center' }}>
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
             Special Program
           </Typography>
         </Box>
         <SpecialProgram />
+        <Box id="student-enrollment" sx={{ width: '100%', backgroundImage: 'linear-gradient(to left, green, yellow)', py: 2, textAlign: 'center' }}>
+          <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
+            Student Requirements & Enrollment Application
+          </Typography>
+        </Box>
+        <StudentReqAndEnroll />
         <Box id="upevents-section" sx={{ width: '100%', backgroundImage: 'linear-gradient(to bottom, green, yellow)', py: 2, textAlign: 'center' }}>
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
             Upcomming Events
