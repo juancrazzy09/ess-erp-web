@@ -6,10 +6,10 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import SelectContent from './SelectContent';
+import Skeleton from '@mui/material/Skeleton';
 import MenuContent from './MenuContent';
-import CardAlert from './CardAlert';
 import OptionsMenu from './OptionsMenu';
+
 
 const drawerWidth = 240;
 
@@ -25,9 +25,14 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu({ user }) {
-  console.log(user);
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ padding: '1rem' }}>
+        <Skeleton variant="text" width={160} height={40} />
+        <Skeleton variant="rectangular" width={210} height={60} style={{ marginTop: '1rem' }} />
+        <Skeleton variant="rounded" width={120} height={40} style={{ marginTop: '1rem' }} />
+      </div>
+    );
   }
   
   return (
@@ -49,7 +54,7 @@ export default function SideMenu({ user }) {
       >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <img src="/src/assets/img/seton logo.png" alt="Logo" style={{ height: 32 }} />
-        <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'green'}}>
+        <Typography variant="h7" sx={{ fontWeight: 'bold', color: 'green'}}>
           Elizabeth Seton School
         </Typography>
       </Box>

@@ -10,22 +10,14 @@ import ListItemIcon, { listItemIconClasses } from '@mui/material/ListItemIcon';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import MenuButton from './MenuButton';
-import { useNavigate } from 'react-router-dom';
+import useLogout from '../../customHooks/LogoutPage';
 
 const MenuItem = styled(MuiMenuItem)({
   margin: '2px 0',
 });
 
 export default function OptionsMenu() {
-  const navigate = useNavigate();
-  const logout = () => {
-    // Clear token and user data from localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('userData');
-  
-    // Redirect to login page using React Router's useNavigate
-    navigate('/login');
-  };
+  const logout = useLogout();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -43,7 +35,25 @@ export default function OptionsMenu() {
       >
         <MoreVertRoundedIcon />
       </MenuButton>
-      <Menu
+      {/* <MenuItem
+        onClick={() => {
+          handleClose();
+          logout();
+        }}
+        sx={{
+          [`& .${listItemIconClasses.root}`]: {
+            ml: 'auto',
+            minWidth: 0,
+          },
+        }}
+      >
+        <ListItemText>Logout</ListItemText>
+        <ListItemIcon>
+          <LogoutRoundedIcon fontSize="small" />
+        </ListItemIcon>
+      </MenuItem> */}
+
+       <Menu
         anchorEl={anchorEl}
         id="menu"
         open={open}
@@ -66,7 +76,6 @@ export default function OptionsMenu() {
         <MenuItem onClick={handleClose}>Profile</MenuItem>
         <MenuItem onClick={handleClose}>My account</MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>Add another account</MenuItem>
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <Divider />
         <MenuItem
@@ -83,7 +92,7 @@ export default function OptionsMenu() {
             <LogoutRoundedIcon fontSize="small" />
           </ListItemIcon>
         </MenuItem>
-      </Menu>
+      </Menu> 
     </React.Fragment>
   );
 }

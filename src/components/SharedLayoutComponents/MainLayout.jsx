@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../customHooks/AuthHook';
 import { alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -22,8 +22,7 @@ const xThemeComponents = {
 }; 
 
 export default function MainLayout(props) {
-  const { userData, loading, error } = useAuth();
-  console.log(userData);
+  const { userData } = useAuth();
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />

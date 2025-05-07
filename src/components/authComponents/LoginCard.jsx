@@ -95,7 +95,7 @@ export default function LoginCard() {
     }
     
     const result = await response.json();
-    console.log('Login successful:', result);
+   /*  console.log('Login successful:', result); */
     localStorage.setItem('token', result.token);
     navigate('/dashboard');
   };

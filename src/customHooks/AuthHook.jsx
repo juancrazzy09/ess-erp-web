@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }) => {
             'Authorization': `Bearer ${token}`,
           },
         });
-        /* console.log(response); */
         if (!response.ok) {
           throw new Error(`Failed to fetch user data, status: ${response.status}`);
         }
@@ -44,7 +43,6 @@ export const AuthProvider = ({ children }) => {
         setUserData(data);  
       } catch (error) {
         setError(error.message); 
-        console.error('Error fetching user data:', error);
       } finally {
         setLoading(false); 
       }
