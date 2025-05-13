@@ -91,6 +91,10 @@ export default function LoginCard() {
   
     if (!response.ok) {
       console.error('Login failed');
+      setEmailError(true);
+      setEmailErrorMessage('Wrong Email');
+      setPasswordError(true);
+      setPasswordErrorMessage('Wrong Password');
       return;
     }
     

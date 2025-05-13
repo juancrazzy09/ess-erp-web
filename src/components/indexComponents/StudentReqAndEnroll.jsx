@@ -10,22 +10,18 @@ import {
 } from '@mui/material';
 import AnimatedCard from './AnimatedCard';
 import StudentRequirements from './StudentRequirements';
-import OnlineApplication from './OnlineRequirements';
-
+import { useNavigate } from 'react-router-dom';
 
 const cardData = [
   {
     title: 'View Student Requirements',
     component: <StudentRequirements />,
   },
-  {
-    title: 'View Online Application',
-    component: <OnlineApplication  />,
-  },
 ];
 
 
 function StudentReqAndEnroll (){
+   const navigate = useNavigate();
   const [scrollDir, setScrollDir] = useState('down');
   const [modalOpen, setModalOpen] = useState(false);
   const [slideIn, setSlideIn] = useState(false);
@@ -47,7 +43,9 @@ function StudentReqAndEnroll (){
     setModalOpen(true);
     setTimeout(() => setSlideIn(true), 10); // Delay to trigger slide-in
   };
-
+  const navToStudentOnlineApp = () => {
+    navigate('/StudentOnlineApplication');
+  };
   const handleClose = () => {
     setSlideIn(false);
     setTimeout(() => {
@@ -80,6 +78,16 @@ function StudentReqAndEnroll (){
             </div>
           </Grid>
         ))}
+        <Grid>
+        <div onClick={navToStudentOnlineApp} style={{ cursor: 'pointer' }}>
+              <AnimatedCard
+                direction="top"
+                title="View Student Online Application"
+                enableSeemore = {false}
+                bgImage= "/src/assets/img/modal_bg.png"
+              />
+            </div>
+        </Grid>
       </Grid>
       <Modal
         open={modalOpen}

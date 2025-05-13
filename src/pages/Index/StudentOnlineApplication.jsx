@@ -19,41 +19,34 @@ import MenuItem from '@mui/material/MenuItem';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import SideCarousel from '../../components/indexComponents/SideCarousel';
-import TopMenu from '../../components/indexComponents/TopMenu';
-import EventCarousel from '../../components/indexComponents/EventsCarousel';
-import SliderCard from '../../components/indexComponents/SliderCard';
-import UpcommingEvents from '../../components/indexComponents/UpcommingEventsComponents';
-import AboutUsComponent from '../../components/indexComponents/AboutUsComponent';
-import SpecialProgram from '../../components/indexComponents/SpecialProgram';
-import StudentReqAndEnroll from '../../components/indexComponents/StudentReqAndEnroll';
+import OnlineAppComponents from '../../components/indexComponents/OnlineAppComponents';
 import Footer from '../../components/SharedLayoutComponents/Footer';
 import '../../assets/css/index/index.css';
 
 const drawerWidth = 240;
 
 const navItems = [
-  { label: 'Home', targetId: 'home-section' },
+  { label: 'Home'},
   {
     label: 'News & Events',
     dropdown: [
-      { label: 'News & Announcement', targetId: 'newsevents-section' },
-      { label: 'Events in Campus', targetId: 'campevents-section' },
-      { label: 'Upcomming Events', targetId: 'upevents-section' },
+      { label: 'News & Announcement'},
+      { label: 'Events in Campus'},
+      { label: 'Upcomming Events'},
     ],
   },
   {
     label: 'Seton Admissions',
     dropdown: [
-      {label: 'Student Requirements', targetId: 'student-enrollment'}, 
-      { label: 'Student Online Application',targetId: 'student-enrollment' }
+      {label: 'Student Requirements'}, 
+      {label: 'Student Online Application'}
     ],
   },
   {
     label: 'About ESS',
     dropdown: [
       { label: 'Contact Us' },
-      { label: 'Seton History', targetId: 'history-section' },
+      { label: 'Seton History'},
       { label: 'Elizabeth Ann Seton' },
       { label: 'Alumni' },
       { label: 'Seton Notes' },
@@ -62,8 +55,8 @@ const navItems = [
   {
     label: 'Programs',
     dropdown: [
-      { label: 'Academic Programs', targetId: 'school-program-section' },
-      { label: 'Special Programs', targetId: 'special-program' },
+      { label: 'Academic Programs'},
+      { label: 'Special Programs' },
       { label: 'Student Services' },
     ],
   },
@@ -73,7 +66,7 @@ const navItems = [
   },
 ];
 
-function DrawerAppBar(props) {
+function StudentOnlineApplication(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -102,8 +95,41 @@ function DrawerAppBar(props) {
   };
 
   const getRoute = (menu, subItem) => {
+    // Top-level direct navigations
     if (menu === 'Login' && subItem === 'Portal') return '/login';
-    return '/'; // fallback
+    if (menu === 'Home') return '/';
+  
+    // News & Events
+    if (
+      menu === 'News & Events' &&
+      ['News & Announcement', 'Events in Campus', 'Upcomming Events'].includes(subItem)
+    ) {
+      return '/';
+    }
+  
+    // About ESS
+    if (
+      menu === 'About ESS' &&
+      ['Contact Us', 'Seton History', 'Elizabeth Ann Seton', 'Alumni', 'Seton Notes'].includes(subItem)
+    ) {
+      return '/';
+    }
+  
+    // Programs
+    if (
+      menu === 'Programs' &&
+      ['Academic Programs', 'Special Programs', 'Student Services'].includes(subItem)
+    ) {
+      return '/';
+    }
+  
+    // Seton Admissions
+    if (menu === 'Seton Admissions') {
+      if (subItem === 'Student Requirements') return '/';
+      if (subItem === 'Student Online Application') return '/StudentOnlineApplication';
+    }
+  
+    return '/'; // fallback default
   };
 
   const scrollToId = (id) => {
@@ -342,60 +368,10 @@ function DrawerAppBar(props) {
       </nav>
 
       <Box component="main" sx={{ width: '100vw', minHeight: '100vh', p: 0, m: 0, overflowX: 'hidden' }}>
-        <Box id="home-section" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', pt: '40px' }}>
-          <TopMenu />
-        </Box>
-
-        <Box id="newsevents-section" sx={{ width: '100%', backgroundColor: 'green', py: 2, textAlign: 'center',boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)', }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-            News & Announcement
-          </Typography>
-        </Box>
-        <SideCarousel />
-
-        <Box id="campevents-section" sx={{ width: '100%', backgroundImage: 'linear-gradient(to right, green, yellow)', py: 2, textAlign: 'center', }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-            Events in Campus
-          </Typography>
-        </Box>
-
-        <Box sx={{ backgroundColor: 'green', width: '100%', pt: '10px', px: 2, py: 2 }}>
-          <EventCarousel />
-        </Box>
-
-      {/*   <Toolbar /> */}
-
-        <Box id="school-program-section" sx={{ width: '100%', backgroundImage: 'linear-gradient(to left, green, yellow)', py: 2, textAlign: 'center' }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-            School Programs
-          </Typography>
-        </Box>
-        <SliderCard />
-        <Box id="special-program" sx={{ width: '100%', backgroundImage: 'linear-gradient(to left, green, yellow)', py: 2, textAlign: 'center' }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-            Special Program
-          </Typography>
-        </Box>
-        <SpecialProgram />
-        <Box id="student-enrollment" sx={{ width: '100%', backgroundImage: 'linear-gradient(to left, green, yellow)', py: 2, textAlign: 'center' }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-            Student Requirements & Student Online Application
-          </Typography>
-        </Box>
-        <StudentReqAndEnroll />
-        <Box id="upevents-section" sx={{ width: '100%', backgroundImage: 'linear-gradient(to bottom, green, yellow)', py: 2, textAlign: 'center' }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-            Upcomming Events
-          </Typography>
-        </Box>
-        <UpcommingEvents />
-
-        <Box id="history-section" sx={{ width: '100%', backgroundImage: 'linear-gradient(to top, green, yellow)', py: 2, textAlign: 'center' }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-            About Us
-          </Typography>
-        </Box>
-        <AboutUsComponent />
+        <Box sx={{ width: '100%', backgroundColor: 'white', pt: 8,}}>
+          <OnlineAppComponents />
+        </Box>     
+       
 
         <Box>
           <Divider>All Rights Reserved.</Divider>
@@ -406,8 +382,8 @@ function DrawerAppBar(props) {
   );
 }
 
-DrawerAppBar.propTypes = {
+StudentOnlineApplication.propTypes = {
   window: PropTypes.func,
 };
 
-export default DrawerAppBar;
+export default StudentOnlineApplication;
