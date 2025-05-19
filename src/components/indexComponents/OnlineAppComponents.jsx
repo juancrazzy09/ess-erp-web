@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 
 { 
     Typography, 
@@ -24,18 +24,22 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CircularProgress from '@mui/material/CircularProgress';
 import { styled } from '@mui/material/styles';
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+    fetchCampusData, 
+    fetchLevelData, 
+    fetchDivisionData, 
+    fetchStrandData,
+    fetchNationalityData,
+    fetchReligionData,
+    fetchProvinceData,
+    fetchMunicipalityData,
+    fetchBarangayData,
+    fetchOnlineApplicationFormData,
+} from '../../State/OnlineApplication/Action';
 
-const campus = [
-    { title: 'Elizabeth Seton School - Las Piñas' },
-    { title: 'Elizabeth Seton School - South' },
-];
-const levelData = {
-  "Pre-Elementary": ["Nursery", "Kindergarten 1", "Kindergarten 2"],
-  "Grade School": ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"],
-  "Junior High School": ["Grade 7", "Grade 8", "Grade 9", "Grade 10"],
-  "Senior High School": ["Grade 11"],
-};
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
     clipPath: 'inset(50%)',
@@ -48,33 +52,209 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 const fileFields = [
-    { key: 'idPicture', label: 'Picture 2x2 ID' },
-    { key: 'birthCert', label: 'Birth Certificate' },
-    { key: 'baptismal', label: 'Baptismal Certificate' },
-    { key: 'goodMoral', label: 'Good Moral Certificate' },
-    { key: 'reportCard', label: 'Current Report Card' },
+    { key: 'StudentPic2x2', label: 'Picture 2x2 ID' },
+    { key: 'StudentBirthCert', label: 'Birth Certificate' },
+    { key: 'StudentBaptismal', label: 'Baptismal Certificate' },
+    { key: 'GoodMoral', label: 'Good Moral Certificate' },
+    { key: 'CurrentReportCard', label: 'Current Report Card' },
   ];
-const trackOptions = ["Science, Technology, Engineering and Mathematics ", "Humans and Social Sciences", "Accountancy, Business And Management"];
-function OnlineAppComponents() {
-    const [selectedDivision, setSelectedDivision] = useState(null);
-    const [selectedLevel, setSelectedLevel] = useState(null);
-    const [selectedTrack, setSelectedTrack] = useState(null);
 
-    const divisionOptions = Object.keys(levelData);
-    const levelOptions = selectedDivision ? levelData[selectedDivision] : [];
+
+function OnlineAppComponents() {
+    
+    const dispatch = useDispatch();
+
+    const campus = useSelector(state => state.dropdown.campus);
+    const division = useSelector(state => state.dropdown.division);
+    const level = useSelector(state => state.dropdown.level);
+    const strand = useSelector(state => state.dropdown.strand);
+    const nationality = useSelector(state => state.dropdown.nationality);
+    const religion = useSelector(state => state.dropdown.religion);
+    const province = useSelector(state => state.dropdown.province);
+    const municipality = useSelector(state => state.dropdown.municipality);
+    const barangay = useSelector(state => state.dropdown.barangay);
+    useEffect(() => {
+    dispatch(fetchCampusData());
+    dispatch(fetchDivisionData());
+    dispatch(fetchNationalityData());
+    dispatch(fetchReligionData());
+    dispatch(fetchProvinceData());
+    }, [dispatch]);
+
+    if (campus.error || division.error || level.error || strand.error || nationality.error || religion.error || province.error || municipality.error || barangay.error ) {
+   return (
+        <Box sx={{ color: 'red' }}>
+            {campus.error && <div>Error loading campus: {campus.error}</div>}
+            {division.error && <div>Error loading division: {division.error}</div>}
+            {level.error && <div>Error loading level: {level.error}</div>} 
+            {strand.error && <div>Error loading strand: {strand.error}</div>} 
+            {nationality.error && <div>Error loading strand: {nationality.error}</div>} 
+            {religion.error && <div>Error loading religion: {religion.error}</div>} 
+            {province.error && <div>Error loading province: {province.error}</div>} 
+            {municipality.error && <div>Error loading municipality: {municipality.error}</div>} 
+            {barangay.error && <div>Error loading barangay: {barangay.error}</div>} 
+        </Box>
+        );
+    }
+    const [selectedCampus, setSelectedCampus] = useState(null);
     const campusOption = {
-        options: campus,
-        getOptionLabel: (option) => option.title,
+        options: campus.data,
+        getOptionLabel: (option) => option.CampusName,
     };
+    const [selectedDivision, setSelectedDivision] = useState(null);
+    const divisionOption = {
+        options: division.data,
+        getOptionLabel: (option) => option.DivName,
+    };
+    const handleDivisionChange = (event, newValue) => {
+    setSelectedDivision(newValue);
+    setFormData((prev) => ({
+        ...prev,
+        DivId: newValue?.DivId || 0
+    }));
+    if (newValue?.DivId) {
+        console.log(newValue?.DivId);
+        dispatch(fetchLevelData(newValue.DivId)); 
+        }
+    };
+    const [selectedLevel, setSelectedLevel] = useState(null);
+    const levelOption = {
+        options: level.data,
+        getOptionLabel: (option) => option.LevelName,
+    };
+
+    const handleStrandChange = (event, newValue) => {
+        setSelectedLevel(newValue);
+        setFormData((prev) => ({
+            ...prev,
+            LevelId: newValue?.LevelId || 0
+        }));
+        if(newValue?.LevelId){
+            dispatch(fetchStrandData(newValue.LevelId));
+        }
+    }
+    const [selectedStrand, setSelectedStrand ] = useState(null);
+    const strandOption = {
+        options: strand.data,
+        getOptionLabel: (option) => option.StrandName,
+    }
+    const [selectedNationality, setSelectedNationality] = useState(null);
+    const nationalityOption = {
+        options: nationality.data,
+        getOptionLabel: (option) => option.NationalityName,
+    }
+    const [selectedReligion, setSelectedReligion] = useState(null);
+    const religionOption = {
+        options: religion.data,
+        getOptionLabel: (option) => option.ReligionName,
+    }
+    const [selectedProvince, setSelectedProvince] = useState(null);
+    const provinceOption = {
+        options: province.data,
+        getOptionLabel: (option) => option.ProvinceName,
+    };
+    const handleProvinceChange = (event, newValue) => {
+    setSelectedProvince(newValue);
+    setFormData((prev) => ({
+            ...prev,
+            ProvinceId: newValue?.ProvinceId || 0
+        }));   
+    if (newValue?.ProvinceId) {
+        console.log(newValue?.ProvinceId);
+        dispatch(fetchMunicipalityData(newValue.ProvinceId)); 
+        }
+    };
+    const [selectedMunicipality, setSelectedMunicipality] = useState(null);
+    const municipalityOption = {
+        options: municipality.data,
+        getOptionLabel: (option) => option.MunicipalityName,
+    };
+    const handleMunicipalityChange = (event, newValue) => {
+    setSelectedMunicipality(newValue);
+    setFormData((prev) => ({
+            ...prev,
+            MunicipalityId: newValue?.MunicipalityId || 0
+    }));    
+    if (newValue?.MunicipalityId) {
+        console.log(newValue?.MunicipalityId);
+        dispatch(fetchBarangayData(newValue.MunicipalityId)); 
+        }
+    };
+    const [selectedBarangay, setSelectedBarangay] = useState(null);
+    const barangayOption = {
+        options: barangay.data,
+        getOptionLabel: (option) => option.BrgyName,
+    };
+
     const [fileNames, setFileNames] = useState({});
 
     const handleFileChange = (event, key) => {
       const file = event.target.files[0];
       if (file) {
         setFileNames((prev) => ({ ...prev, [key]: file.name }));
+        setFormData((prev) => ({
+        ...prev,
+            [key]: file.name, 
+            }));
       }
     };
-  
+
+
+   const [formData, setFormData] = useState({
+    Fname: '',
+    Mname: '',
+    Lname: '',
+    Gender: 'male',
+    DateOfBirth: null,
+    PlaceOfBirth: '',
+    CampusId: 0,
+    DivId: 0,
+    LevelId: 0,
+    StrandId: 0,
+    NationalityId: 0,
+    ReligionId: 0,
+    ReligionName: '',
+    F_Fname: '',
+    F_Mname: '',
+    F_Lname: '',
+    FathersOccupation: '',
+    FathersEmail: '',
+    FathersPhone: '',
+    M_Fname: '',
+    M_Mname: '',
+    M_Lname: '',
+    MothersOccupation: '',
+    MothersEmail: '',
+    MothersPhone: '',
+    C_Fname: '',
+    C_Mname: '',
+    C_Lname: '',
+    ContactPersonEmail: '',
+    EmailVerificationCode: '',
+    CPRelationship: '',
+    ProvinceId: 0,
+    MunicipalityId: 0,
+    BrgyId: 0,
+    HomeStreetAddress: '',
+    HomePhoneNo: '',
+    MobilePhone: '',
+    StudentPic2x2: '',
+    StudentBirthCert: '',
+    StudentBaptismal: '',
+    GoodMoral: '',
+    CurrentReportCard: '',
+  });
+  const handleSubmit = () => {
+    console.log('Form submission:', formData);
+    dispatch(fetchOnlineApplicationFormData(formData)); 
+  };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  const handleDateChange = (newDate) => {   
+    setFormData(prev => ({ ...prev, DateOfBirth: newDate }));
+  };
   return (
     <Box sx={{ p: 2}}>
         <Typography variant="h4" fontWeight="bold" gutterBottom sx={{textAlign: "center" , color:"green"}}> 
@@ -112,31 +292,42 @@ function OnlineAppComponents() {
                 >
                     Student Information
                 </Typography>
-            
+                <Typography
+                    gutterBottom
+                    sx={{
+                    color: 'gray',
+                    }}
+                >
+                    Please input the correct student information.
+                </Typography>
             </Box>
-            <Divider sx={{ borderBottomWidth: 2 }} >Center</Divider>
+                
             <Box sx={{ pt: 2 }}>
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item xs={12} sm={6}>
                 <Typography>First Name <span style={{ color: 'red' }}>*</span></Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder='Input first name' name="Fname" value={formData.Fname} onChange={handleChange} />
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Typography>Middle Name</Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} />
+                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder='Input middle name' name="Mname" value={formData.Mname} onChange={handleChange}/>
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Typography>Last Name <span style={{ color: 'red' }}>*</span></Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} />
+                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder='input last name' name="Lname" value={formData.Lname} onChange={handleChange}/>
             </Grid>
             <Grid item xs={12} sm={6}>
             <FormControl>
                 <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
                 <RadioGroup
                     row
+                    name="Gender"
                     aria-labelledby="demo-row-radio-buttons-group-label"
+                    value={formData.Gender}
                     defaultValue="male"
-                    name="row-radio-buttons-group"
+                    onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, Gender: e.target.value }))
+                    }
                 >
                 <FormControlLabel value="male" control={<Radio />} label="Male" />
                 <FormControlLabel value="female" control={<Radio />} label="Female" />
@@ -147,10 +338,17 @@ function OnlineAppComponents() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker', 'DatePicker']}>
                     <DemoItem label="Date of Birth">
-                    <DatePicker />
+                    <DatePicker 
+                    value={formData.DateOfBirth}
+                    onChange={handleDateChange}
+                    />
                     </DemoItem>
                 </DemoContainer>
                 </LocalizationProvider>
+            </Grid>
+             <Grid item xs={12} sm={6}>
+                <Typography>Place of birth <span style={{ color: 'red' }}>*</span></Typography>
+                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder='Input place of birth' name="PlaceOfBirth" value={formData.PlaceOfBirth} onChange={handleChange}/>
             </Grid>
             </Grid>
             </Box>
@@ -175,7 +373,14 @@ function OnlineAppComponents() {
                 >
                 Campus Information
                 </Typography>
-            
+                <Typography
+                    gutterBottom
+                    sx={{
+                    color: 'gray',
+                    }}
+                >
+                Please choose the correct campus and year level of student.
+                </Typography>
             </Box> 
             <Grid item xs={12}>
                 <Divider sx={{ borderBottomWidth: 2, my: 2 }} />
@@ -184,81 +389,195 @@ function OnlineAppComponents() {
                 <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                     <Grid sx={{ width: '270px', maxWidth: '100%'}}>
                         <Typography>Choose Campus <span style={{ color: 'red' }}>*</span></Typography>
-                        <Autocomplete
-                        {...campusOption}
-                        id="auto-complete"
-                        renderInput={(params) => (
-                        <TextField {...params} variant="standard" />
-                        )}
+                           <Autocomplete
+                            {...campusOption}
+                            id="campus-auto-complete"
+                            value={selectedCampus}
+                            onChange={(event, newValue) => {
+                              setSelectedCampus(newValue);
+                              setFormData((prev) => ({
+                                ...prev,
+                                CampusId: newValue?.CampusId || '', // ✅ store campusId in formData
+                                }));
+                            }}
+                            isOptionEqualToValue={(option, value) => option.CampusId === value.CampusId}
+                            renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                variant="standard"
+                                placeholder="Select Campus"
+                                InputProps={{
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                    <>
+                                        {campus.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </>
+                                    ),
+                                }}
+                                />
+                            )}
                         />
+
                     </Grid>
                     <Grid item sx={{ width: '270px', maxWidth: '100%' }}>
                         <Typography>
                             Division <span style={{ color: 'red' }}>*</span>
-                        </Typography><Autocomplete
-                            id="division-autocomplete"
-                            options={divisionOptions}
-                            value={selectedDivision}
-                            onChange={(event, newValue) => {
-                                setSelectedDivision(newValue);
-                                setSelectedLevel(null); // Reset level when division changes
-                                setSelectedTrack(null);
+                        </Typography>
+                        <Autocomplete
+                        {...divisionOption}
+                        id="division-auto-complete"
+                        value={selectedDivision}
+                        onChange={handleDivisionChange}
+                        isOptionEqualToValue={(option, value) => option.DivId === value.DivId}
+                        renderInput={(params) => (
+                            <TextField
+                            {...params}
+                            variant="standard"
+                            placeholder="Select Division"
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                <>
+                                    {division.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                                ),
                             }}
-                            renderInput={(params) => (
-                                <TextField {...params} variant="standard"/>
-                            )}
                             />
-
+                        )}
+                        />
                     </Grid>
                     <Grid item sx={{ width: '270px', maxWidth: '100%' }}>
                         <Typography>
                         Level <span style={{ color: 'red' }}>*</span>
                         </Typography>
                        <Autocomplete
-                        id="level-autocomplete"
-                        options={levelOptions}
-                        value={selectedLevel}
-                        onChange={(event, newValue) => setSelectedLevel(newValue)}
-                        disabled={!selectedDivision}
+                            {...levelOption}
+                            id="campus-auto-complete"
+                            value={selectedLevel}
+                            onChange={handleStrandChange}
+                            isOptionEqualToValue={(option, value) => option.LevelId === value.LevelId}
+                            noOptionsText={level.loading ? 'Loading levels...' : 'No levels available. You need to select division first.'}
+                            renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                variant="standard"
+                                placeholder="Select Level"
+                                InputProps={{
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                    <>
+                                        {level.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </>
+                                    ),
+                                }}
+                                />
+                            )}
+                        />
+                    </Grid>
+                    {selectedLevel?.LevelId === 15 && (
+                    <Grid item sx={{ width: '270px', maxWidth: '100%' }}>
+                        <Typography>Strand <span style={{ color: 'red' }}>*</span></Typography>
+                        <Autocomplete
+                        {...strandOption}
+                        id="strand-autocomplete"
+                        value={selectedStrand}
+                        onChange={(event, newValue) => {
+                             setSelectedStrand(newValue);
+                             setFormData((prev) => ({
+                                ...prev,
+                                StrandId: newValue?.StrandId || 0
+                             }));
+                        }}
                         renderInput={(params) => (
-                            <TextField {...params} variant="standard"/>
+                             <TextField
+                            {...params}
+                            variant="standard"
+                            placeholder="Select Strand"
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                <>
+                                    {strand.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                                ),
+                            }}
+                            />
                         )}
                         />
                     </Grid>
-                     {selectedLevel === "Grade 11" && (
-                       <Grid item sx={{ width: '270px', maxWidth: '100%' }}>
-                        <Typography>Strand <span style={{ color: 'red' }}>*</span></Typography>
-                        <Autocomplete
-                            id="track-autocomplete"
-                            options={trackOptions}
-                            value={selectedTrack}
-                            onChange={(event, newValue) => setSelectedTrack(newValue)}
-                            renderInput={(params) => (
-                            <TextField {...params} variant="standard"/>
-                            )}
-                        />
-                        </Grid>
                     )}
                     <Grid sx={{ width: '270px', maxWidth: '100%'}}>
                     <Typography>Nationality <span style={{ color: 'red' }}>*</span></Typography>
                         <Autocomplete
-                        {...campusOption}
+                        {...nationalityOption}
                         id="auto-complete"
+                        value={selectedNationality}
+                        onChange={(event, newValue) => {
+                             setSelectedNationality(newValue);
+                             setFormData((prev) => ({
+                                ...prev,
+                                NationalityId: newValue?.NationalityId || 0
+                             }));
+                        }}
                         renderInput={(params) => (
-                        <TextField {...params} variant="standard" />
+                         <TextField
+                            {...params}
+                            variant="standard"
+                            placeholder="Select Nationality"
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                <>
+                                    {nationality.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                                ),
+                            }}
+                            />
                         )}
                         />
                     </Grid>
                     <Grid sx={{ width: '270px', maxWidth: '100%'}}>
                     <Typography>Religion <span style={{ color: 'red' }}>*</span></Typography>
                         <Autocomplete
-                        {...campusOption}
+                        {...religionOption}
                         id="auto-complete"
+                        value={selectedReligion}
+                         onChange={(event, newValue) => {
+                             setSelectedReligion(newValue);
+                             setFormData((prev) => ({
+                                ...prev,
+                                ReligionId: newValue?.ReligionId || 0
+                             }));
+                        }}
                         renderInput={(params) => (
-                        <TextField {...params} variant="standard" />
+                        <TextField
+                            {...params}
+                            variant="standard"
+                            placeholder="Select Religion"
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                <>
+                                    {religion.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                                ),
+                            }}
+                            />
                         )}
                         />
                     </Grid>
+                    {selectedReligion?.ReligionId === 18 && (
+                    <Grid item sx={{ width: '270px', maxWidth: '100%' }}>
+                        <Typography>Input your religion <span style={{ color: 'red' }}>*</span></Typography>
+                        <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder='input your religion' name="ReligionName" value={formData.ReligionName} onChange={handleChange}/>  
+                    </Grid>
+                    )}
                 </Grid>
             </Box>
         </Grid>
@@ -300,27 +619,27 @@ function OnlineAppComponents() {
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item xs={12} sm={6}>
                 <Typography>First Name <span style={{ color: 'red' }}>*</span></Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="input father's first name" name="F_Fname" value={formData.F_Fname} onChange={handleChange}/>
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Typography>Middle Name <span style={{ color: 'red' }}>*</span></Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}  placeholder="input father's middle name" name="F_Mname" value={formData.F_Mname} onChange={handleChange}/>
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Typography>Last Name <span style={{ color: 'red' }}>*</span></Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}  placeholder="input father's last name" name="F_Lname" value={formData.F_LName} onChange={handleChange}/>
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Typography>Occupation <span style={{ color: 'red' }}>*</span></Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="input father's occupation" name="FathersOccupation" value={formData.FathersOccupation} onChange={handleChange}/>
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Typography>Email Address <span style={{ color: 'red' }}>*</span></Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="input father's email" name="FathersEmail" value={formData.FathersEmail} onChange={handleChange}/>
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Typography>Mobile Number <span style={{ color: 'red' }}>*</span></Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="input father's mobile number" name="FathersPhone" value={formData.FathersPhone} onChange={handleChange}/>
             </Grid>
             </Grid>
             </Box>
@@ -350,29 +669,29 @@ function OnlineAppComponents() {
             <Divider sx={{ borderBottomWidth: 2, my: 2 }} />
             <Box sx={{ pt: 2 }}>
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                <Grid item xs={12} sm={6}>
+                 <Grid item xs={12} sm={6}>
                     <Typography>First Name <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="input mother's first name" name="M_Fname" value={formData.M_Fname} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography>Middle Name <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}  placeholder="input mother's middle name" name="M_Mname" value={formData.M_Mname} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography>Last Name <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}  placeholder="input mother's last name" name="M_Lname" value={formData.M_LName} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography>Occupation <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="input mother's occupation" name="MothersOccupation" value={formData.MothersOccupation} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography>Email Address <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="input mother's email" name="MothersEmail" value={formData.MothersEmail} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                    <Typography>Mobile Number<span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <Typography>Mobile Number <span style={{ color: 'red' }}>*</span></Typography>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="input mother's mobile number" name="MothersPhone" value={formData.MothersPhone} onChange={handleChange}/>
                 </Grid>
             </Grid>
             </Box>
@@ -388,23 +707,23 @@ function OnlineAppComponents() {
                 <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                 <Grid item xs={12} sm={6}>
                     <Typography>First Name <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="Input guardian's first name" name="C_Fname" value={formData.C_Fname} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography>Middle Name <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="Input guardian's middle name" name="C_Mname" value={formData.C_Mname} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography>Last Name <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="Input guardian's last name" name="C_Lname" value={formData.C_Lname} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                    <Typography>Occupation <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <Typography>Relationship <span style={{ color: 'red' }}>*</span></Typography>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="Input guardian's relationship to applicant" name="CPRelationship" value={formData.CPRelationship} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography>Email Address <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="Input guardian's email" name="ContactPersonEmail" value={formData.ContactPersonEmail} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Box sx={{ width: '250px', maxWidth: '100%'}} >
@@ -414,15 +733,15 @@ function OnlineAppComponents() {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography>Email Verification Code <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="Input email verification code" name="EmailVerificationCode" value={formData.EmailVerificationCode} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography>Home Phone Number <span style={{ color: 'red' }}>*</span></Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="Input guardian's home phone number" name="HomePhoneNo" value={formData.HomePhoneNo} onChange={handleChange}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography>Mobile Number</Typography>
-                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                    <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="Input guardian's mobile number" name="MobilePhone" value={formData.MobilePhone} onChange={handleChange}/>
                 </Grid>
                 </Grid>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pt: 2}}>
@@ -453,32 +772,87 @@ function OnlineAppComponents() {
                     <Grid sx={{ width: '250px', maxWidth: '100%'}}>
                             <Typography>Choose Province <span style={{ color: 'red' }}>*</span></Typography>
                             <Autocomplete
-                            {...campusOption}
-                            id="auto-complete"
+                            {...provinceOption}
+                            id="province-auto-complete"
+                            value={selectedProvince}
+                            onChange={handleProvinceChange}
+                            isOptionEqualToValue={(option, value) => option.ProvinceId === value.ProvinceId}
                             renderInput={(params) => (
-                            <TextField {...params} variant="standard" />
+                                <TextField
+                                {...params}
+                                variant="standard"
+                                placeholder="Select Province"
+                                InputProps={{
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                    <>
+                                        {province.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </>
+                                    ),
+                                }}
+                                />
                             )}
                             />
                         </Grid>
                         <Grid sx={{ width: '250px', maxWidth: '100%'}}>
                             <Typography>Choose Municipality <span style={{ color: 'red' }}>*</span></Typography>
                             <Autocomplete
-                            {...campusOption}
-                            id="auto-complete"
-                            renderInput={(params) => (
-                            <TextField {...params} variant="standard" />
-                            )}
+                                {...municipalityOption}
+                                id="municipality-auto-complete"
+                                value={selectedMunicipality}
+                                onChange={handleMunicipalityChange}
+                                isOptionEqualToValue={(option, value) => option.MunicipalityId === value.MunicipalityId}
+                                noOptionsText={municipality.loading ? 'Loading levels...' : 'No municipality available. You need to select province first.'}
+                                renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    variant="standard"
+                                    placeholder="Select Municipality"
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        endAdornment: (
+                                        <>
+                                            {municipality.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                            {params.InputProps.endAdornment}
+                                        </>
+                                        ),
+                                    }}
+                                    />
+                                )}
                             />
                         </Grid>
                         <Grid sx={{ width: '250px', maxWidth: '100%'}}>
                             <Typography>Choose Baranggay <span style={{ color: 'red' }}>*</span></Typography>
                             <Autocomplete
-                            {...campusOption}
-                            id="auto-complete"
-                            renderInput={(params) => (
-                            <TextField {...params} variant="standard" />
-                            )}
-                            />
+                                    {...barangayOption}
+                                    id="barangay-auto-complete"
+                                    value={selectedBarangay}
+                                    onChange={(event, newValue) => {
+                                        setSelectedBarangay(newValue);
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            BrgyId: newValue?.BrgyId || 0
+                                        }));
+                                    }}
+                                    noOptionsText={barangay.loading ? 'Loading levels...' : 'No barangay available. You need to select province and municipality first.'}
+                                    renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        variant="standard"
+                                        placeholder="Select Barangay"
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            endAdornment: (
+                                            <>
+                                                {barangay.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                {params.InputProps.endAdornment}
+                                            </>
+                                            ),
+                                        }}
+                                        />
+                                    )}
+                                />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                         <Typography>Home #, Unit, Street <span style={{ color: 'red' }}>*</span></Typography>
@@ -525,7 +899,7 @@ function OnlineAppComponents() {
         <Divider sx={{ borderBottomWidth: 2, pt:2 }} />
         </Container>
         <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
-        <Button variant="contained" color="success" size="large">
+        <Button variant="contained" color="success" size="large" onClick={handleSubmit}>
             Submit
         </Button>
         </Box>
