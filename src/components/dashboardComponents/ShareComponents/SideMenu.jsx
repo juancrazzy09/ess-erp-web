@@ -25,6 +25,9 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu({ user }) {
+  const data = user.data;
+  console.log(data);
+  console.log(user);
   if (!user) {
     return (
       <div style={{ padding: '1rem' }}>
@@ -69,7 +72,6 @@ export default function SideMenu({ user }) {
         }}
       >
         <MenuContent />
-    {/*     <CardAlert /> */}
       </Box>
       <Stack
         direction="row"
@@ -83,16 +85,16 @@ export default function SideMenu({ user }) {
       >
         <Avatar
           sizes="small"
-          alt="Riley Carter"
+          alt={[data.Fname, data.Mname, data.Lname].filter(Boolean).join(' ')}
           src="/static/images/avatar/7.jpg"
           sx={{ width: 36, height: 36 }}
         />
         <Box sx={{ mr: 'auto' }}>
           <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
-          {[user.fname, user.mname, user.lname].filter(Boolean).join(' ')}
+          {[data.Fname, data.Mname, data.Lname].filter(Boolean).join(' ')}
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          { user.email }
+          { data.Email }
           </Typography>
         </Box>
         <OptionsMenu />

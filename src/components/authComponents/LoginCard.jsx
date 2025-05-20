@@ -1,6 +1,6 @@
-import Box from '@mui/material/Box';
+/* import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import MuiCard from '@mui/material/Card';
+
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
 import FormLabel from '@mui/material/FormLabel';
@@ -8,12 +8,30 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
+import Typography from '@mui/material/Typography'; */
+import MuiCard from '@mui/material/Card';
+import 
+{ 
+    Typography, 
+    Box, 
+    Checkbox,
+    Divider, 
+    TextField,
+    FormControl,
+    FormLabel,
+    FormControlLabel,
+    Link,
+    Button,
+    Alert,
+    Snackbar,
+} from "@mui/material";
 import { styled } from '@mui/material/styles';
 import ForgotPassword from './ForgotPassword';
 import { GoogleIcon, SitemarkIcon } from './CustomIcons';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchLoginData } from '../../State/AuthState/Action';
+import { useDispatch } from 'react-redux';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -34,6 +52,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 export default function LoginCard() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
@@ -41,6 +60,14 @@ export default function LoginCard() {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = useState(false);
   
+ /*  if(login.error){
+    return(
+      <Box sx= {{color: 'red'}}>
+        {login.error && <div>Error loading login: {login.error}</div>}
+      </Box>
+    );
+    
+  } */
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -75,33 +102,46 @@ export default function LoginCard() {
 
     return isValid;
   };
+  const [openSuccess, setSuccessOpen] = React.useState(false);
+  const handleSubmitSuccClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSuccessOpen(false);
+  };
   const loginRequest = async (email, password) => {
-    const baseUrl = import.meta.env.VITE_BASE_URL; 
-    const data = {
+    const formData = {
       Email: email,
       Password: password
     };
-    const response = await fetch(`${baseUrl}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify( data ),
-    });
-  
-    if (!response.ok) {
-      console.error('Login failed');
+    
+    const res = await dispatch(fetchLoginData(formData));
+
+    if (res.ok) {
+      setSuccessOpen(true);
+      console.log(res.data);
+      const userRole = res.data.UserRole;
+      console.log(userRole);
+      console.log(res.data.Token);
+      switch (userRole){
+        case "admission":
+          localStorage.setItem('token', res.data.Token);
+          localStorage.setItem('userData', JSON.stringify(res));
+          navigate('/admission/dashboard');
+        default:
+          null;
+      } 
+      
+    } 
+    else {
+
       setEmailError(true);
       setEmailErrorMessage('Wrong Email');
       setPasswordError(true);
       setPasswordErrorMessage('Wrong Password');
       return;
     }
-    
-    const result = await response.json();
-   /*  console.log('Login successful:', result); */
-    localStorage.setItem('token', result.token);
-    navigate('/dashboard');
   };
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -197,6 +237,16 @@ export default function LoginCard() {
           Sign in with Google
         </Button>
       </Box>
+      <Snackbar open={openSuccess} autoHideDuration={2000} onClose={handleSubmitSuccClose}>
+      <Alert
+          onClose={handleSubmitSuccClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+      >
+        Login Successfully!
+      </Alert>
+      </Snackbar>
     </Card>
   );
 }

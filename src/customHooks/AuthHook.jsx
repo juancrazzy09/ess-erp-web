@@ -1,61 +1,31 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
-const AuthContext = createContext();
-
-export const AuthProvider = ({ children }) => {
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); 
+function AuthHook () {
+  const navigate = useNavigate();
+  const [authData, setAuthData] = useState({
+    userData: null,
+    isAuthenticated: false,
+  });
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const storedUserData = JSON.parse(localStorage.getItem('userData'));
 
-    
-    const storedUserData = localStorage.getItem('userData');
-    if (storedUserData) {
-      setUserData(JSON.parse(storedUserData));
-      setLoading(false);
-      return;
-    }
-
-    if (!token) {
-      console.warn('No token found');
-      setLoading(false);  
-      return;
-    }
-
-    const fetchUserData = async () => {
-      try {
-        const baseUrl = import.meta.env.VITE_BASE_URL;
-        const response = await fetch(`${baseUrl}/user-profile`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
+    if (!storedUserData || !storedUserData.data?.Token) {
+      navigate('/login');
+    } else {
+      const tokenLength = storedUserData.data.Token.length;
+      if (tokenLength > 0) {
+        setAuthData({
+          userData: storedUserData,
+          isAuthenticated: true,
         });
-        if (!response.ok) {
-          throw new Error(`Failed to fetch user data, status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        localStorage.setItem('userData', JSON.stringify(data));
-        setUserData(data);  
-      } catch (error) {
-        setError(error.message); 
-      } finally {
-        setLoading(false); 
+      } else {
+        navigate('/login');
       }
-    };
+    }
+  }, [navigate]);
 
-    fetchUserData();
-  }, []);  
-
-  return (
-    <AuthContext.Provider value={{ userData, loading, error }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => useContext(AuthContext);
+  return authData;
+}
+export default AuthHook;

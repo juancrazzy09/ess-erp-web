@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { useAuth } from '../../customHooks/AuthHook';
 import { alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import AppNavbar from '../dashboardComponents/AppNavbar';
-import Header from '../dashboardComponents/Header';
-import SideMenu from '../dashboardComponents/SideMenu';
+import SideMenuMobile from '../dashboardComponents/ShareComponents/SideMenuMobile';
+import Header from '../dashboardComponents/ShareComponents/Header';
+import SideMenu from '../dashboardComponents/ShareComponents/SideMenu';
 import AppTheme from '../shared-theme/AppTheme';
 import {
     chartsCustomizations,
@@ -20,15 +19,26 @@ const xThemeComponents = {
   ...dataGridCustomizations,
   ...treeViewCustomizations,
 }; 
-
+import useAuth from '../../customHooks/AuthHook';
 export default function MainLayout(props) {
-  const { userData } = useAuth();
+  const { userData, isAuthenticated } = useAuth();
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const toggleDrawer = (open) => {
+    setDrawerOpen(open);
+  };
+
+  if(isAuthenticated){
+  console.log(userData);
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: 'flex' }}>
         <SideMenu  user={userData} />
-        <AppNavbar />
+        <SideMenuMobile 
+        user={userData}
+        open={drawerOpen} 
+        toggleDrawer={toggleDrawer} 
+        />
         <Header />
         <Box
            component="main"
@@ -38,10 +48,14 @@ export default function MainLayout(props) {
                ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
                : alpha(theme.palette.background.default, 1),
              overflow: 'auto',
+             display: 'flex',
+             flexDirection: 'column',
+             alignItems: 'center',
+             minHeight: '100vh',
              paddingTop: { xs: '56px', md: '80px' }, // ✅ Apply padding to make room for fixed Header
            })}
         >
-          <Stack
+           <Stack
             spacing={2}
             sx={{
               alignItems: 'center',
@@ -52,9 +66,10 @@ export default function MainLayout(props) {
           >
            
             {props.children}
-          </Stack>
+          </Stack> 
         </Box>
       </Box>
     </AppTheme>
   );
+  }
 }

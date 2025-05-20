@@ -175,7 +175,7 @@ export const fetchBarangayData = (MunicipalityId = '') => async (dispatch) => {
   dispatch(fetchBarangayRequest());
   try {
     const url = `${baseUrl}/auth/get-barangay-dropdown?MunicipalityId=${encodeURIComponent(MunicipalityId)}`;
-    const response = await fetch(url);
+    const response = await fetch(url);  
     if (!response.ok) throw new Error(response.statusText);
     const data = await response.json();
     console.log(data);
@@ -202,13 +202,20 @@ export const fetchOnlineApplicationFormData = (formData) => async (dispatch) => 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(formData),
     });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+   /*  if (!response.ok) {
+      const text = await response.text();                 
+      console.log(text); 
+      throw new Error(text || `HTTP ${response.status}`);
+    } */
+/*     console.log(respone); */
     const result = await response.json(); 
+    if (result.success == false){
+      throw new Error(result.message)
+    }
     dispatch(fetchOnlineApplicationFormSuccess(result));
+    return { ok: true, data: result };
   } catch (error) {
     dispatch(fetchOnlineApplicationFormFailure(error.message));
+    return { ok: false, error };
   }
 };

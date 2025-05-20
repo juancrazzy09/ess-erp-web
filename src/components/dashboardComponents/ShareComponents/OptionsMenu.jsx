@@ -10,7 +10,7 @@ import ListItemIcon, { listItemIconClasses } from '@mui/material/ListItemIcon';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import MenuButton from './MenuButton';
-import useLogout from '../../customHooks/LogoutPage';
+import useLogout from '../../../customHooks/LogoutPage';
 
 const MenuItem = styled(MuiMenuItem)({
   margin: '2px 0',
@@ -35,24 +35,6 @@ export default function OptionsMenu() {
       >
         <MoreVertRoundedIcon />
       </MenuButton>
-      {/* <MenuItem
-        onClick={() => {
-          handleClose();
-          logout();
-        }}
-        sx={{
-          [`& .${listItemIconClasses.root}`]: {
-            ml: 'auto',
-            minWidth: 0,
-          },
-        }}
-      >
-        <ListItemText>Logout</ListItemText>
-        <ListItemIcon>
-          <LogoutRoundedIcon fontSize="small" />
-        </ListItemIcon>
-      </MenuItem> */}
-
        <Menu
         anchorEl={anchorEl}
         id="menu"

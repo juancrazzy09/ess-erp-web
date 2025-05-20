@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider }  from "../customHooks/AuthHook";
-import PrivateRoute from "./PrivateRoute";
+/* import { AuthProvider }  from "../customHooks/AuthHook"; */
+/* import PrivateRoute from "./PrivateRoute"; */
 import Index from '../pages/Index/Index';
 import StudentOnlineApplication from '../pages/Index/StudentOnlineApplication';
 import Login from "../pages/Auth/Login";
-import Dashboard from "../pages/Dashboard/Dashboard";
+import Admission from "../pages/Dashboard/Admission/Dashboard";
 
 
 const AppRoutes = () => (
@@ -16,19 +16,16 @@ const AppRoutes = () => (
     <Route 
       path="/*"
       element={
-        <AuthProvider>
-          <Routes>
+         <Routes>
             <Route path="/login" element={<Login />} />
             <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              }
+              path="/admission/dashboard"
+              element={ <Admission /> }
             />
           </Routes>
-        </AuthProvider>
+     /*    <AuthProvider>
+         
+        </AuthProvider> */
       }
     />
   </Routes>

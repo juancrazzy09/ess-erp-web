@@ -16,7 +16,8 @@ import
     Autocomplete,
     Button,
     Alert,
-    AlertTitle
+    AlertTitle,
+    Snackbar,
 } from "@mui/material";
 import InfoIcon from '@mui/icons-material/Info';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
@@ -200,7 +201,7 @@ function OnlineAppComponents() {
     };
 
 
-   const [formData, setFormData] = useState({
+ const initialState = {
     Fname: '',
     Mname: '',
     Lname: '',
@@ -243,17 +244,86 @@ function OnlineAppComponents() {
     StudentBaptismal: '',
     GoodMoral: '',
     CurrentReportCard: '',
-  });
-  const handleSubmit = () => {
-    console.log('Form submission:', formData);
-    dispatch(fetchOnlineApplicationFormData(formData)); 
+    };
+  const [formData, setFormData] = useState(initialState);
+  const [formErrors, setFormErrors] = useState({});  
+  const [openSuccess, setSuccessOpen] = React.useState(false);
+  const [openFailed, setFailedOpen] = React.useState(false);
+  const validate = (data) => {
+    const errors = {};
+
+    // ▶ required text fields
+    if (!data.Fname.trim())  errors.Fname  = 'First name is required';
+    if (!data.Lname.trim())  errors.Lname  = 'Last name is required';
+
+    // ▶ date
+    if (!data.DateOfBirth)   errors.DateOfBirth = 'Date of birth is required';
+
+    // ▶ numeric (IDs must be chosen)
+    if (data.CampusId === 0)      errors.CampusId      = 'Select a campus';
+    if (data.DivId === 0)         errors.DivId         = 'Select a division';
+    if (data.LevelId === 0)       errors.LevelId       = 'Select a level';
+    if (data.NationalityId === 0) errors.NationalityId = 'Select a nationality';
+
+    // ▶ e‑mails (basic regex)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!data.F_Fname.trim())  errors.F_Fname  = 'First name is required';
+    if (!data.F_Mname.trim())  errors.F_Mname  = 'Middle name is required';
+    if (!data.F_Lname.trim())  errors.F_Lname  = 'Last name is required';
+    if (data.FathersEmail && !emailRegex.test(data.FathersEmail))
+        errors.FathersEmail = 'Invalid e‑mail';
+    if (data.MothersEmail && !emailRegex.test(data.MothersEmail))
+        errors.MothersEmail = 'Invalid e‑mail';
+    if (data.ContactPersonEmail && !emailRegex.test(data.ContactPersonEmail))
+        errors.ContactPersonEmail = 'Invalid e‑mail';
+
+    // ▶ phone (simple length check)
+    if (data.MobilePhone && data.MobilePhone.length < 10)
+        errors.MobilePhone = 'Phone must be at least 10 digits';
+
+    // add more rules as you need …
+
+    return errors;
+    }; 
+  const handleSubmitSuccClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSuccessOpen(false);
   };
+  const handleSubmitFailedClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setFailedOpen(false);
+  };
+  const resetForm = () => setFormData(initialState);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   const handleDateChange = (newDate) => {   
     setFormData(prev => ({ ...prev, DateOfBirth: newDate }));
+  };
+    const handleSubmit = async () => {
+    const errors = validate(formData); 
+    if (Object.keys(errors).length) {
+        setFormErrors(errors);      // show errors in the UI
+        return;                     // 🚫 stop here if invalid
+    }
+    setFormErrors({}); 
+
+    const res = await dispatch(fetchOnlineApplicationFormData(formData)); 
+
+    if (res.ok) {
+        setSuccessOpen(true);
+        resetForm();
+    } else {
+        setFailedOpen(true);
+        resetForm();
+    } 
   };
   return (
     <Box sx={{ p: 2}}>
@@ -306,15 +376,43 @@ function OnlineAppComponents() {
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item xs={12} sm={6}>
                 <Typography>First Name <span style={{ color: 'red' }}>*</span></Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder='Input first name' name="Fname" value={formData.Fname} onChange={handleChange} />
+                <TextField 
+                id="filled-basic" 
+                variant="filled" 
+                sx={{ width: '250px', maxWidth: '100%'}} 
+                placeholder='Input first name' 
+                name="Fname" 
+                value={formData.Fname} 
+                onChange={handleChange} 
+                error={Boolean(formErrors.Fname)}
+                helperText={formErrors.Fname} 
+                 />
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Typography>Middle Name</Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder='Input middle name' name="Mname" value={formData.Mname} onChange={handleChange}/>
+                <TextField 
+                id="filled-basic" 
+                variant="filled" 
+                sx={{ width: '250px', maxWidth: '100%'}} 
+                placeholder='Input middle name' 
+                name="Mname" 
+                value={formData.Mname} 
+                onChange={handleChange}
+                />
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Typography>Last Name <span style={{ color: 'red' }}>*</span></Typography>
-                <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder='input last name' name="Lname" value={formData.Lname} onChange={handleChange}/>
+                <TextField 
+                id="filled-basic" 
+                variant="filled" 
+                sx={{ width: '250px', maxWidth: '100%'}}
+                placeholder='input last name' 
+                name="Lname" 
+                value={formData.Lname} 
+                onChange={handleChange}
+                error={Boolean(formErrors.Lname)}
+                helperText={formErrors.Lname} 
+                />
             </Grid>
             <Grid item xs={12} sm={6}>
             <FormControl>
@@ -335,19 +433,34 @@ function OnlineAppComponents() {
             </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DatePicker', 'DatePicker']}>
-                    <DemoItem label="Date of Birth">
-                    <DatePicker 
-                    value={formData.DateOfBirth}
-                    onChange={handleDateChange}
+               <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DatePicker']}>
+                    <DemoItem
+                    label={
+                        <span>
+                        Date of Birth <span style={{ color: 'red' }}>*</span>
+                        </span>
+                    }
+                    >
+                    <DatePicker
+                        value={formData.DateOfBirth}
+                        onChange={handleDateChange}
+                        renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            variant="standard"
+                            error={Boolean(formErrors.DateOfBirth)}
+                            helperText={formErrors.DateOfBirth}
+                            fullWidth
+                        />
+                        )}
                     />
                     </DemoItem>
                 </DemoContainer>
                 </LocalizationProvider>
             </Grid>
              <Grid item xs={12} sm={6}>
-                <Typography>Place of birth <span style={{ color: 'red' }}>*</span></Typography>
+                <Typography>Place of birth </Typography>
                 <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder='Input place of birth' name="PlaceOfBirth" value={formData.PlaceOfBirth} onChange={handleChange}/>
             </Grid>
             </Grid>
@@ -400,6 +513,8 @@ function OnlineAppComponents() {
                                 CampusId: newValue?.CampusId || '', // ✅ store campusId in formData
                                 }));
                             }}
+                            error={Boolean(formErrors.CampusId)}
+                            helperText={formErrors.CampusId}
                             isOptionEqualToValue={(option, value) => option.CampusId === value.CampusId}
                             renderInput={(params) => (
                             <TextField
@@ -908,6 +1023,26 @@ function OnlineAppComponents() {
                 <span style={{color: "red" }}>*</span> We will communicate with you after 3-4 days of application provided the submitted documents are sufficient/complete.
             </Typography>
         </Container>
+        <Snackbar open={openSuccess} autoHideDuration={2000} onClose={handleSubmitSuccClose}>
+        <Alert
+            onClose={handleSubmitSuccClose}
+            severity="success"
+            variant="filled"
+            sx={{ width: '100%' }}
+        >
+            Application Submitted!
+        </Alert>
+        </Snackbar>
+        <Snackbar open={openFailed} autoHideDuration={2000} onClose={handleSubmitFailedClose}>
+        <Alert
+            onClose={handleSubmitFailedClose}
+            severity="error"
+            variant="filled"
+            sx={{ width: '100%' }}
+        >
+            Applicant is already exist!
+        </Alert>
+        </Snackbar>
     </Box>
   );
 }
