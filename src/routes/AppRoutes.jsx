@@ -5,6 +5,7 @@ import Index from '../pages/Index/Index';
 import StudentOnlineApplication from '../pages/Index/StudentOnlineApplication';
 import Login from "../pages/Auth/Login";
 import Admission from "../pages/Dashboard/Admission/Dashboard";
+import StudentInformationForm from "../pages/Dashboard/Admission/StudentInformationForm";
 
 
 const AppRoutes = () => (
@@ -21,6 +22,10 @@ const AppRoutes = () => (
             <Route
               path="/admission/dashboard"
               element={ <Admission /> }
+            />
+            <Route
+              path="/admission/student-information/"
+              element={ <StudentInformationForm /> }
             />
           </Routes>
      /*    <AuthProvider>

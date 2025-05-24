@@ -7,6 +7,7 @@ import SideMenuMobile from '../dashboardComponents/ShareComponents/SideMenuMobil
 import Header from '../dashboardComponents/ShareComponents/Header';
 import SideMenu from '../dashboardComponents/ShareComponents/SideMenu';
 import AppTheme from '../shared-theme/AppTheme';
+import Footer from './Footer';
 import {
     chartsCustomizations,
     dataGridCustomizations,
@@ -42,6 +43,7 @@ export default function MainLayout(props) {
         <Header />
         <Box
            component="main"
+           className='dashboard-main-box'
            sx={(theme) => ({
              flexGrow: 1,
              backgroundColor: theme.vars
@@ -52,10 +54,13 @@ export default function MainLayout(props) {
              flexDirection: 'column',
              alignItems: 'center',
              minHeight: '100vh',
-             paddingTop: { xs: '56px', md: '80px' }, // ✅ Apply padding to make room for fixed Header
+             width: '1280px',
+             marginX: 'auto', 
+             paddingTop: { xs: '56px', md: '64px', lg: '72px', xl: '100px' },
            })}
         >
-           <Stack
+          {props.children}
+           {/* <Stack
             spacing={2}
             sx={{
               alignItems: 'center',
@@ -65,10 +70,12 @@ export default function MainLayout(props) {
             }}
           >
            
-            {props.children}
-          </Stack> 
+            
+          </Stack>  */}
+          <Footer />
         </Box>
       </Box>
+      
     </AppTheme>
   );
   }
