@@ -25,7 +25,7 @@ function StudentFormComponent(studentId) {
         console.log('Fetched data:', data);
     }, [data]);
     return (
-        <div sx={{ pt: 2}}>
+        <div style={{ paddingTop: 16, width: '1073px' }}>
             <Box>
             <Divider
             sx={{
@@ -411,7 +411,7 @@ function StudentFormComponent(studentId) {
                         <Typography>Occupation</Typography>
                         <TextField
                             variant="filled"
-                            value={data[0]?.FathserOccupation || ''}
+                            value={data[0]?.FathersOccupation || ''}
                             InputProps={{ readOnly: true }}
                             sx={{
                                 '& .MuiInputBase-input': {

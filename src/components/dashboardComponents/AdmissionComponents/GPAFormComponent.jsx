@@ -13,9 +13,11 @@ import {
     TextField,
     Grid,
     Button, 
+    Modal,
  } from "@mui/material";
 import ButtonSuccess from '../../buttonComponents/ButtonSuccess';
 import ButtonWarning from '../../buttonComponents/ButtonWarning';
+import ButtonDanger from "../../buttonComponents/ButtonDanger.jsx";
 import React, { useState } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import SaveAltOutlinedIcon from '@mui/icons-material/SaveAltOutlined';
@@ -29,8 +31,19 @@ const initialRows = [
   { code: 'Co',  subject: 'Conduct', },
 ];
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  borderRadius: 2,
+  boxShadow: 24,
+  p: 4,
+};
 
-function GPAFormComponent(studentId){
+function GPAFormComponent({ studentId }){
     
     console.log(studentId);
     const [rows, setRows] = useState(initialRows);
@@ -42,7 +55,10 @@ function GPAFormComponent(studentId){
         )
         );
     };
-        
+    const [openModal, setOpenModal] = useState(false);
+
+    const handleOpenModal = () => setOpenModal(true);
+    const handleCloseModal = () => setOpenModal(false);
     return(
         <div>
             <Box>
@@ -116,9 +132,22 @@ function GPAFormComponent(studentId){
             </TableContainer>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, pt: 1}}>
                 <ButtonWarning str="Clear" />
-                <ButtonSuccess  icon={<SaveAltOutlinedIcon/>} str="Save" />
+                <ButtonSuccess  icon={<SaveAltOutlinedIcon/>} str="Save" onClick={handleOpenModal} />
             </Box>
             </Box>
+            <Modal open={openModal} onClose={handleCloseModal}>
+            <Box sx={style}>
+                <Typography variant="h6" gutterBottom>
+                Are you sure you want to save?
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+                <ButtonSuccess str="Yes"/>
+                <ButtonDanger str="No"
+                    onClick={handleCloseModal}
+                />
+                </Box>
+            </Box>
+            </Modal>
         </div>
     );
 }

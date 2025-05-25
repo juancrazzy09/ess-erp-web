@@ -191,7 +191,7 @@ export const fetchOnlineApplicationFormRequest = () => ({ type: FETCH_ONLINEAPPL
 export const fetchOnlineApplicationFormSuccess = (data) => ({ type: FETCH_ONLINEAPPLICATIONFORM_SUCCESS, payload: data });
 export const fetchOnlineApplicationFormFailure = (error) => ({ type: FETCH_ONLINEAPPLICATIONFORM_FAILURE, payload: error });
 
-export const fetchOnlineApplicationFormData = (formData) => async (dispatch) => {
+export const fetchOnlineApplicationFormData = (dataToSend) => async (dispatch) => {
   dispatch(fetchOnlineApplicationFormRequest());
 
   try {
@@ -199,8 +199,8 @@ export const fetchOnlineApplicationFormData = (formData) => async (dispatch) => 
 
     const response = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData),
+   /*  headers: { 'Content-Type': 'application/json' }, */
+    body: dataToSend,
     });
    /*  if (!response.ok) {
       const text = await response.text();                 

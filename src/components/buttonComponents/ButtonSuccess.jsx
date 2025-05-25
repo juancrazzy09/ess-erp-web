@@ -1,8 +1,9 @@
 import { Button } from '@mui/material';
 
-function ButtonSuccess({icon = null, str }) {
+function ButtonSuccess({icon = null, str, onClick  }) {
   return (
     <Button
+    onClick={onClick}
     sx={{
             backgroundColor: '#4CAF50',
             color: 'white',

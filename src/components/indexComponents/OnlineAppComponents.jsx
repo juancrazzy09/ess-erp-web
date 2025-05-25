@@ -195,7 +195,7 @@ function OnlineAppComponents() {
         setFileNames((prev) => ({ ...prev, [key]: file.name }));
         setFormData((prev) => ({
         ...prev,
-            [key]: file.name, 
+            [key]: file, 
             }));
       }
     };
@@ -212,6 +212,7 @@ function OnlineAppComponents() {
     DivId: 0,
     LevelId: 0,
     StrandId: 0,
+    StudentType: 'New',
     NationalityId: 0,
     ReligionId: 0,
     ReligionName: '',
@@ -239,11 +240,12 @@ function OnlineAppComponents() {
     HomeStreetAddress: '',
     HomePhoneNo: '',
     MobilePhone: '',
-    StudentPic2x2: '',
-    StudentBirthCert: '',
-    StudentBaptismal: '',
-    GoodMoral: '',
-    CurrentReportCard: '',
+    StudentPic2x2: null,
+    StudentBirthCert: null,
+    StudentBaptismal: null,
+    GoodMoral: null,
+    CurrentReportCard: null,
+    ActiveStatus: 'P',
     };
   const [formData, setFormData] = useState(initialState);
   const [formErrors, setFormErrors] = useState({});  
@@ -257,7 +259,7 @@ function OnlineAppComponents() {
     if (!data.Lname.trim())  errors.Lname  = 'Last name is required';
 
     // ▶ date
-    if (!data.DateOfBirth)   errors.DateOfBirth = 'Date of birth is required';
+    /* if (!data.DateOfBirth)   errors.DateOfBirth = 'Date of birth is required';
 
     // ▶ numeric (IDs must be chosen)
     if (data.CampusId === 0)      errors.CampusId      = 'Select a campus';
@@ -279,12 +281,14 @@ function OnlineAppComponents() {
 
     // ▶ phone (simple length check)
     if (data.MobilePhone && data.MobilePhone.length < 10)
-        errors.MobilePhone = 'Phone must be at least 10 digits';
+        errors.MobilePhone = 'Phone must be at least 10 digits'; */
 
     // add more rules as you need …
 
     return errors;
     }; 
+
+
   const handleSubmitSuccClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -292,6 +296,8 @@ function OnlineAppComponents() {
 
     setSuccessOpen(false);
   };
+
+
   const handleSubmitFailedClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -299,32 +305,92 @@ function OnlineAppComponents() {
 
     setFailedOpen(false);
   };
+
+
   const resetForm = () => setFormData(initialState);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+
   const handleDateChange = (newDate) => {   
     setFormData(prev => ({ ...prev, DateOfBirth: newDate }));
   };
-    const handleSubmit = async () => {
-    const errors = validate(formData); 
-    if (Object.keys(errors).length) {
-        setFormErrors(errors);      // show errors in the UI
-        return;                     // 🚫 stop here if invalid
-    }
-    setFormErrors({}); 
 
-    const res = await dispatch(fetchOnlineApplicationFormData(formData)); 
+
+    const handleSubmit = async () => {
+    const errors = validate(formData);
+    if (Object.keys(errors).length) {
+        setFormErrors(errors);
+        return;
+    }
+    setFormErrors({});
+
+    // Build FormData instance
+    const dataToSend = new FormData();
+
+    // Append all fields (except files) as strings
+    Object.entries(formData).forEach(([key, value]) => {
+        if (
+        value !== null &&
+        !(value instanceof File) &&
+        !(value instanceof Blob)
+        ) {
+        // For dates, convert to ISO string or suitable format if needed
+        if (value instanceof Date) {
+            dataToSend.append(key, value.toISOString());
+        } else {
+            dataToSend.append(key, value);
+        }
+        }
+    });
+    console.log(formData);
+    // Append file fields separately (they are of type File or null)
+    if (formData.StudentPic2x2) {
+        dataToSend.append("StudentPic2x2", formData.StudentPic2x2);
+    }
+    if (formData.StudentBirthCert) {
+        dataToSend.append("StudentBirthCert", formData.StudentBirthCert);
+    }
+    if (formData.StudentBaptismal) {
+        dataToSend.append("StudentBaptismal", formData.StudentBaptismal);
+    }
+    if (formData.GoodMoral) {
+        dataToSend.append("GoodMoral", formData.GoodMoral);
+    }
+    if (formData.CurrentReportCard) {
+        dataToSend.append("CurrentReportCard", formData.CurrentReportCard);
+    }
+
+    // Now send dataToSend via fetch or your redux action
+    // Example with fetch:
+    /*
+    const response = await fetch('/your-api-endpoint', {
+        method: 'POST',
+        body: dataToSend,
+        // Note: Do NOT set Content-Type header, browser will set it automatically
+    });
+    const result = await response.json();
+    if(response.ok) {
+        setSuccessOpen(true);
+        resetForm();
+    } else {
+        setFailedOpen(true);
+    }
+    */
+
+    // Or if your fetchOnlineApplicationFormData can accept FormData:
+    const res = await dispatch(fetchOnlineApplicationFormData(dataToSend));
 
     if (res.ok) {
         setSuccessOpen(true);
         resetForm();
     } else {
         setFailedOpen(true);
-        resetForm();
-    } 
+    }
   };
+    
   return (
     <Box sx={{ p: 2}}>
         <Typography variant="h4" fontWeight="bold" gutterBottom sx={{textAlign: "center" , color:"green"}}> 
@@ -449,8 +515,8 @@ function OnlineAppComponents() {
                         <TextField
                             {...params}
                             variant="standard"
-                            error={Boolean(formErrors.DateOfBirth)}
-                            helperText={formErrors.DateOfBirth}
+                           /*  error={Boolean(formErrors.DateOfBirth)}
+                            helperText={formErrors.DateOfBirth} */
                             fullWidth
                         />
                         )}
@@ -513,8 +579,8 @@ function OnlineAppComponents() {
                                 CampusId: newValue?.CampusId || '', // ✅ store campusId in formData
                                 }));
                             }}
-                            error={Boolean(formErrors.CampusId)}
-                            helperText={formErrors.CampusId}
+                            /* error={Boolean(formErrors.CampusId)}
+                            helperText={formErrors.CampusId} */
                             isOptionEqualToValue={(option, value) => option.CampusId === value.CampusId}
                             renderInput={(params) => (
                             <TextField
@@ -971,7 +1037,7 @@ function OnlineAppComponents() {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                         <Typography>Home #, Unit, Street <span style={{ color: 'red' }}>*</span></Typography>
-                        <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}}/>
+                        <TextField id="filled-basic" variant="filled" sx={{ width: '250px', maxWidth: '100%'}} placeholder="ex. Block 1 Lot 1" name="HomeStreetAddress" value={formData.HomeStreetAddress} onChange={handleChange}/>
                     </Grid>
                     </Grid>
                 </Box>

@@ -1,7 +1,8 @@
 import { Button } from '@mui/material';
-function ButtonWarning({icon = null, str}){
+function ButtonWarning({icon = null, str, onClick}){
     return(
        <Button
+       onClick={onClick}
         sx={{
             backgroundColor: '#ffca28', // yellow-ish
             color: 'white',            // better contrast with yellow
