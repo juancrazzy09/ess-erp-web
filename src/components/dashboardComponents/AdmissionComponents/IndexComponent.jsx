@@ -52,9 +52,11 @@ const  IndexComponent = forwardRef((props, ref) => {
         Welcome to Admission Dashboard
       </Typography>
     </Box>
-    <Alert severity="warning" variant="outlined">
+    <Box sx={{ width: '1000px', alignItems: 'center'}}>
+     <Alert severity="warning" variant="outlined">
       Note: To monitor the online application, you may click the button to view the table.
     </Alert>
+    </Box>
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: 3 }}>
        <Typography
         variant="h4"

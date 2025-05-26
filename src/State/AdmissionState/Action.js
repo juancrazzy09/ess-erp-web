@@ -2,7 +2,9 @@ import {
     FETCH_APPLICATIONCOUNT_REQUEST, FETCH_APPLICATIONCOUNT_SUCCESS, FETCH_APPLICATIONCOUNT_FAILURE,
     FETCH_GENERATETABLE_REQUEST,FETCH_GENERATETABLE_SUCCESS,FETCH_GENERATETABLE_FAILURE,
     FETCH_STUDENTBYID_REQUEST,FETCH_STUDENTBYID_SUCCESS, FETCH_STUDENTBYID_FAILURE,
-
+    FETCH_DOCUMENTTABLE_REQUEST, FETCH_DOCUMENTTABLE_SUCCESS, FETCH_DOCUMENTTABLE_FAILURE,
+    FETCH_ADMISSIONSUBMITGPA_REQUEST,FETCH_ADMISSIONSUBMITGPA_SUCCESS,FETCH_ADMISSIONSUBMITGPA_FAILURE,
+    FETCH_STUDENTGPA_REQUEST, FETCH_STUDENTGPA_SUCCESS, FETCH_STUDENTGPA_FAILURE,
 } from './ActionType';
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -108,5 +110,109 @@ export const fetchStudentByIdData = (StudentId = '') => async(dispatch) => {
     catch(error){
         dispatch(fetchStudentByIdFailure(error.message));
         return { ok: false, error};
+    }
+};
+//Insert GPA Grade in admission
+export const fetchAdmissionSubmitGPARequest = () => ({ type: FETCH_ADMISSIONSUBMITGPA_REQUEST });
+export const fetchAdmissionSubmitGPASuccess = (data) => ({ type: FETCH_ADMISSIONSUBMITGPA_SUCCESS, payload: data});
+export const fetchAdmissionSubmitGPAFailure = (error) => ({ type: FETCH_ADMISSIONSUBMITGPA_FAILURE, payload: error});
+
+export const fetchAdmissionSubmitGPAData = (gradeData) => async(dispatch) => {
+    dispatch(fetchAdmissionSubmitGPARequest());
+    try{
+        console.log(gradeData);
+        const token = localStorage.getItem('token');
+        const url = `${baseUrl}/admission/insert-admission-gpa`;
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+              'Authorization': `Bearer ${token}`,
+             'Content-Type': 'application/json' 
+            },
+        body: JSON.stringify(gradeData),
+        });
+
+        const res = await response.json();
+        console.log(res);
+        if(res.success == false){
+            throw new Error(res.message);
+        }
+        dispatch(fetchAdmissionSubmitGPASuccess(res));
+        return{ ok: true, data: res};
+    }
+    catch(error)
+    {
+        dispatch(fetchAdmissionSubmitGPAFailure(error.message));
+        return { ok: false, error };
+    }
+};
+
+//Insert GPA Grade in admission
+export const fetchStudentGPARequest = () => ({ type: FETCH_STUDENTGPA_REQUEST });
+export const fetchStudentGPASuccess = (data) => ({ type: FETCH_STUDENTGPA_SUCCESS, payload: data});
+export const fetchStudentGPAFailure = (error) => ({ type: FETCH_STUDENTGPA_FAILURE, payload: error});
+
+export const fetchStudentGPAData = (StudentId = '') => async(dispatch) => {
+    dispatch(fetchStudentGPARequest());
+    try{
+        
+        const token = localStorage.getItem('token');
+        const url = `${baseUrl}/admission/get-student-gpa?StudentId=${StudentId}`;
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+              'Authorization': `Bearer ${token}`,
+             'Content-Type': 'application/json' 
+            },
+        });
+
+        const res = await response.json();
+        console.log(res);
+        if(res.success == false){
+            throw new Error(res.message);
+        }
+        dispatch(fetchStudentGPASuccess(res));
+        return{ ok: true, data: res};
+    }
+    catch(error)
+    {
+        dispatch(fetchStudentGPAFailure(error.message));
+        return { ok: false, error };
+    }
+};
+
+//get docs submitted table 
+export const fetchDocumentTableRequest = () => ({ type: FETCH_DOCUMENTTABLE_REQUEST });
+export const fetchDocumentTableSuccess = (data) => ({ type: FETCH_DOCUMENTTABLE_SUCCESS, payload: data});
+export const fetchDocumentTableFailure = (error) => ({ type: FETCH_DOCUMENTTABLE_FAILURE, payload: error});
+
+export const fetchDocumenttableData = (student_Id = '') => async(dispatch) => {
+    dispatch(fetchDocumentTableRequest());
+    try{
+        const token = localStorage.getItem('token');
+        const url = `${baseUrl}/admission/get-student-docs-id?StudentId=${encodeURIComponent(student_Id)}`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        const res = await response.json();
+        console.log(res);
+        if(res.success == false){
+            throw new Error(res.message);
+        }
+        dispatch(fetchDocumentTableSuccess(res));
+        return{ ok: true, data: res};
+    }
+    catch(error)
+    {
+        dispatch(fetchDocumentTableFailure(error.message));
+        return { ok: false, error };
     }
 };

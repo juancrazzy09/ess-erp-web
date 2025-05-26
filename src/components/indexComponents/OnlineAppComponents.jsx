@@ -1089,7 +1089,7 @@ function OnlineAppComponents() {
                 <span style={{color: "red" }}>*</span> We will communicate with you after 3-4 days of application provided the submitted documents are sufficient/complete.
             </Typography>
         </Container>
-        <Snackbar open={openSuccess} autoHideDuration={2000} onClose={handleSubmitSuccClose}>
+        <Snackbar open={openSuccess} autoHideDuration={4000} onClose={handleSubmitSuccClose}>
         <Alert
             onClose={handleSubmitSuccClose}
             severity="success"
@@ -1099,7 +1099,7 @@ function OnlineAppComponents() {
             Application Submitted!
         </Alert>
         </Snackbar>
-        <Snackbar open={openFailed} autoHideDuration={2000} onClose={handleSubmitFailedClose}>
+        <Snackbar open={openFailed} autoHideDuration={4000} onClose={handleSubmitFailedClose}>
         <Alert
             onClose={handleSubmitFailedClose}
             severity="error"

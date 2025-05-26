@@ -54,7 +54,12 @@ export default function MainLayout(props) {
              flexDirection: 'column',
              alignItems: 'center',
              minHeight: '100vh',
-             width: '1280px',
+             width: {
+              xs: '100%', // extra-small
+              sm: '100%', // small
+              md: '100%', // medium
+              lg: '1080px', // large and up
+            },
              marginX: 'auto', 
              paddingTop: { xs: '56px', md: '64px', lg: '72px', xl: '100px' },
            })}
